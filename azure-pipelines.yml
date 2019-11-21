@@ -1,0 +1,71 @@
+variables:
+  # Skip building on Python 2.7 on all platforms
+  CIBW_SKIP: cp27-*
+  CIBW_BEFORE_BUILD: "pip install -r requirements.txt"
+  CIBW_BEFORE_BUILD_LINUX: "pip install -r requirements.txt && bash ci/centos_install_libarchive_builddep.sh && bash ci/build_libarchive.sh"
+  CIBW_TEST_REQUIRES: pytest
+  CIBW_TEST_COMMAND: "pytest {project}/tests"
+
+jobs:
+  - job: test
+    variables:
+      LD_LIBRARY_PATH: /usr/local/lib
+    steps:
+      - bash: bash ci/download_libarchive.sh
+        displayName: download libarchive
+      - bash: |
+          sudo apt update
+          sudo apt install -y build-essential cmake libssl-dev libacl1-dev libbz2-dev liblzma-dev libzip-dev liblz4-dev libzstd-dev lzop
+        displayName: install build dependencies for libarchive
+      - bash: sudo bash ci/build_libarchive.sh
+        displayName: build libarchive
+      - task: UsePythonVersion@0
+      - bash: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install -r dev-requirements.txt
+          python setup.py test
+  - job: linux_wheels
+    pool: { vmImage: "Ubuntu-16.04" }
+    steps:
+      - bash: bash ci/download_libarchive.sh
+        displayName: download libarchive
+      - task: UsePythonVersion@0
+      - bash: |
+          python -m pip install --upgrade pip
+          pip install cibuildwheel==1.0.0
+          cibuildwheel --output-dir wheelhouse .
+      - task: PublishBuildArtifacts@1
+        inputs: { pathtoPublish: "wheelhouse" }
+  - job: macos_wheels
+    pool: { vmImage: "macOS-10.13" }
+    variables:
+      LDFLAGS: "-L/usr/local/opt/libarchive/lib"
+      CPPFLAGS: "-I/usr/local/opt/libarchive/include"
+      PKG_CONFIG_PATH: "/usr/local/opt/libarchive/lib/pkgconfig"
+    steps:
+      - bash: brew install libarchive
+        displayName: Install libarchive
+      - task: UsePythonVersion@0
+      - bash: |
+          python -m pip install --upgrade pip
+          pip install cibuildwheel==1.0.0
+          cibuildwheel --output-dir wheelhouse .
+      - task: PublishBuildArtifacts@1
+        inputs: { pathtoPublish: "wheelhouse" }
+  # - job: windows_wheels
+  #   pool: { vmImage: "vs2017-win2016" }
+  #   steps:
+  #     - bash: bash ci/download_libarchive.sh
+  #       displayName: download libarchive
+  #     - script: ci/build_libarchive.cmd
+  #       displayName: build libarchive
+  #     - task: UsePythonVersion@0
+  #     - bash: |
+  #         cp libarchive/libarchive/*.h .
+  #         cp build_ci/cmake/libarchive/Release/* .
+  #         ls .
+  #         python -m pip install --upgrade pip
+  #         pip install cibuildwheel==1.0.0
+  #         cibuildwheel --output-dir wheelhouse .
+  #     - task: PublishBuildArtifacts@1
+  #       inputs: { pathtoPublish: "wheelhouse" }

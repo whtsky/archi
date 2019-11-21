@@ -1,0 +1,4 @@
+-r requirements.txt
+black==19.10b0
+pytest
+pytest-cov

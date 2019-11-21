@@ -1,21 +1,49 @@
-from distutils.core import setup
-from distutils.extension import Extension
-from Cython.Distutils import build_ext
+import platform
+import sys
 
-setup(name='pyarchive',
-    version='0.1.1',
-    description='Python wrapper for libarchive',
-    author='Paul Colomiets',
-    author_email='pc@gafol.net',
-    url='http://github.com/tailhook/pyarchive',
+from Cython.Build import cythonize
+from Cython.Distutils import build_ext
+from setuptools import setup
+from setuptools.command.test import test as TestCommand
+from setuptools.extension import Extension
+
+ENABLE_LINETRACE = "test" in sys.argv and platform.python_implementation() == "CPython"
+
+
+class PyTest(TestCommand):
+    def run_tests(self):
+        import pytest
+
+        errno = pytest.main(
+            ["--cov", "--cov-report", "xml", "--cov-report", "term-missing"]
+        )
+
+        sys.exit(errno)
+
+
+setup(
+    name="archi",
+    version="0.1.0",
+    description="Multi-format archive library based on libarchive",
+    author="Wu Haotian",
+    author_email="whtsky@gmail.com",
+    url="https://github.com/whtsky/archi",
     classifiers=[
-        'Programming Language :: Python :: 3',
-        'License :: OSI Approved :: MIT License',
-        ],
-    packages=['archive'],
-    cmdclass = {'build_ext': build_ext},
-    ext_modules = [Extension("archive.core",
-        ["archive/core.pyx"],
-        libraries = ['archive'],
-        )],
-    )
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+    ],
+    cmdclass={"test": PyTest},
+    ext_modules=cythonize(
+        Extension(
+            "archi",
+            ["archi.pyx"],
+            libraries=["archive"],
+            define_macros=[("CYTHON_TRACE", ENABLE_LINETRACE and "1" or "0")],
+        ),
+        gdb_debug=True,
+        compiler_directives={
+            "linetrace": ENABLE_LINETRACE,
+            "binding": ENABLE_LINETRACE,
+        },
+    ),
+)

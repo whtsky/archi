@@ -1,7 +1,10 @@
+# cython: language_level=3
+
 import warnings
 
 from cpython.bytes cimport *
 from cpython.unicode cimport *
+from pathlib import PurePath
 from libc.stdint cimport int64_t
 
 cdef extern from "sys/types.h":
@@ -19,6 +22,7 @@ cdef extern from "archive.h":
     int archive_read_close(archive *)
     int archive_read_finish(archive *)
     int archive_errno(archive *)
+    int archive_read_open_memory(archive *,char *, size_t)
     int archive_read_open_filename(archive *, char *, int)
     int archive_read_next_header(archive *, archive_entry **)
     int archive_read_data(archive *, void *buf, int size)
@@ -50,7 +54,7 @@ cdef extern from "Python.h":
 cdef extern from "string.h":
     int strlen(char *)
 
-cdef extern from "malloc.h":
+cdef extern from "stdlib.h":
     void *alloca(size_t sz)
 
 
@@ -111,28 +115,19 @@ cdef class Entry:
         cdef void *buf
         cdef size_t len
         cdef int offset
-        if size == -1:
-            sz = archive_entry_stat(self._entry).st_size
-            if sz > self.position:
-                ln = sz - self.position
-                buf = <char*>alloca(ln)
-                bread = self.archive._checkl(archive_read_data(self.archive._arch,
-                    buf, sz - self.position))
-                assert bread == ln
-                res = PyBytes_FromStringAndSize(<char*>buf + self.position, ln)
-                self.position = sz
-                return res
+        sz = archive_entry_stat(self._entry).st_size
+        if sz <= self.position:
             return b""
-        r = archive_read_data_block(self.archive._arch, &buf, &len, &offset)
-        if r == ARCHIVE_EOF:
-            return b""
-        self.archive._check(r)
-        if offset > self.position:
-            zlen = offset - self.position
-            self.position = offset + len
-            return b'\x00'*zlen + PyBytes_FromStringAndSize(<char *>buf, len)
-        self.position = offset + len
-        return PyBytes_FromStringAndSize(<char *>buf, len)
+        ln = sz - self.position
+        if size == -1 or size > ln:
+            size = ln
+        buf = <char*>alloca(size)
+        bread = self.archive._checkl(archive_read_data(self.archive._arch,
+            buf, size))
+        assert bread == size
+        res = PyBytes_FromStringAndSize(<char*>buf, size)
+        self.position += size
+        return res
 
 cdef class Archive:
     cdef archive *_arch
@@ -149,12 +144,15 @@ cdef class Archive:
         self._check(archive_read_support_format_all(self._arch))
 
     def __init__(self, file, bufsize=16384):
-        if hasattr(file, 'read'):
-            raise RuntimeError("File-like objects"
-                " are not supported at the momment")
         self.bufsize = bufsize
-        self.fn = fn = PyUnicode_EncodeFSDefault(file)
-        self._check(archive_read_open_filename(self._arch, fn, bufsize))
+        if hasattr(file, 'read'):
+            buf = file.read()
+            self._check(archive_read_open_memory(self._arch, buf, len(buf)))
+        else:
+            if isinstance(file, PurePath):
+                file = str(file.resolve())
+            fn = PyUnicode_EncodeFSDefault(file)
+            self._check(archive_read_open_filename(self._arch, fn, bufsize))
 
     cdef close(self):
         if self._arch:
