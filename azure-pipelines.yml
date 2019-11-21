@@ -31,9 +31,11 @@ jobs:
         displayName: download libarchive
       - task: UsePythonVersion@0
       - bash: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip setuptools wheel
           pip install cibuildwheel==1.0.0
           cibuildwheel --output-dir wheelhouse .
+          twine check wheelhouse/*.whl
+
       - task: PublishBuildArtifacts@1
         inputs: { pathtoPublish: "wheelhouse" }
   - job: macos_wheels
@@ -47,7 +49,7 @@ jobs:
         displayName: Install libarchive
       - task: UsePythonVersion@0
       - bash: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip setuptools wheel
           pip install cibuildwheel==1.0.0
           cibuildwheel --output-dir wheelhouse .
       - task: PublishBuildArtifacts@1

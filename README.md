@@ -27,3 +27,4 @@ files[0].filename # Address boundary error !
 ## TODO
 
 - [ ] compression
+- [ ] build wheels for Windows: https://discuss.python.org/t/need-auditwheel-like-utility-for-other-platforms/2028 , https://discuss.python.org/t/packaging-dlls-on-windows/1401

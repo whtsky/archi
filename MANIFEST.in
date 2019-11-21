@@ -1,5 +1,3 @@
-include setup.py
-include archive/*.py
-include archive/*.pyx
-include archive/*.c
-include *.rst
+include LICENSE
+include archi.pyx
+include README.md
