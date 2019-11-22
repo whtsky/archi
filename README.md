@@ -24,6 +24,12 @@ files = [f for f in archi]
 files[0].filename # Address boundary error !
 ```
 
+## Changelog
+
+### v0.1.1
+
+- Fix binary wheels for macOS
+
 ## TODO
 
 - [ ] compression
