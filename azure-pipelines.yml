@@ -7,6 +7,7 @@ variables:
   CIBW_BEFORE_BUILD_LINUX: "pip install -r requirements.txt && bash ci/centos_install_libarchive_builddep.sh && bash ci/build_libarchive.sh"
   CIBW_TEST_REQUIRES: pytest
   CIBW_TEST_COMMAND: "pytest {project}/tests"
+  CMAKE_BUILD_PARALLEL_LEVEL: 4
 
 jobs:
   - job: test
@@ -58,20 +59,22 @@ jobs:
           cibuildwheel --output-dir wheelhouse .
       - task: PublishBuildArtifacts@1
         inputs: { pathtoPublish: "wheelhouse" }
-  # - job: windows_wheels
-  #   pool: { vmImage: "vs2017-win2016" }
-  #   steps:
-  #     - bash: bash ci/download_libarchive.sh
-  #       displayName: download libarchive
-  #     - script: ci/build_libarchive.cmd
-  #       displayName: build libarchive
-  #     - task: UsePythonVersion@0
-  #     - bash: |
-  #         cp libarchive/libarchive/*.h .
-  #         cp build_ci/cmake/libarchive/Release/* .
-  #         ls .
-  #         python -m pip install --upgrade pip
-  #         pip install cibuildwheel==1.0.0
-  #         cibuildwheel --output-dir wheelhouse .
-  #     - task: PublishBuildArtifacts@1
-  #       inputs: { pathtoPublish: "wheelhouse" }
+  - job: windows_wheels
+    pool: { vmImage: "vs2017-win2016" }
+    variables:
+      USE_LIBARCHIVE_FROM_PROGRAM_FILES: "true"
+    steps:
+      - bash: bash ci/download_libarchive.sh
+        displayName: download libarchive
+      - script: ci/build_libarchive.cmd
+        displayName: build libarchive
+      - task: UsePythonVersion@0
+      - script: |
+          DIR "C:\Program Files (x86)\libarchive\lib"
+          DIR "C:\Program Files (x86)\libarchive\include"
+          SET PATH="C:\Program Files (x86)\libarchive\lib";%PATH%
+          python -m pip install --upgrade pip
+          pip install cibuildwheel==1.0.0
+          cibuildwheel --output-dir wheelhouse .
+      - task: PublishBuildArtifacts@1
+        inputs: { pathtoPublish: "wheelhouse" }

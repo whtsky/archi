@@ -22,3 +22,4 @@ MKDIR build_ci\cmake
 CD build_ci\cmake
 cmake -G "Visual Studio 15 2017" -D CMAKE_BUILD_TYPE="Release" ..\..\libarchive || EXIT /b 1
 cmake --build . --target ALL_BUILD --config Release
+cmake --build . --target INSTALL --config Release
