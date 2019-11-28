@@ -26,6 +26,10 @@ files[0].filename # Address boundary error !
 
 ## Changelog
 
+### vnext
+
+- use PyMem_Malloc & PyMem_Free instead of alloca
+
 ### v0.1.1
 
 - Fix binary wheels for macOS

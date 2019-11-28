@@ -6,6 +6,8 @@ from cpython.bytes cimport *
 from cpython.unicode cimport *
 from pathlib import PurePath
 from libc.stdint cimport int64_t
+from cpython.mem cimport PyMem_Malloc, PyMem_Free
+
 
 cdef extern from "sys/types.h":
     struct stat:
@@ -53,9 +55,6 @@ cdef extern from "Python.h":
 
 cdef extern from "string.h":
     int strlen(char *)
-
-cdef extern from "stdlib.h":
-    void *alloca(size_t sz)
 
 
 class ArchiveWarning(Warning):
@@ -121,11 +120,12 @@ cdef class Entry:
         ln = sz - self.position
         if size == -1 or size > ln:
             size = ln
-        buf = <char*>alloca(size)
+        buf = <char*>PyMem_Malloc(size)
         bread = self.archive._checkl(archive_read_data(self.archive._arch,
             buf, size))
         assert bread == size
         res = PyBytes_FromStringAndSize(<char*>buf, size)
+        PyMem_Free(buf)
         self.position += size
         return res
 
