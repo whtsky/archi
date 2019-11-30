@@ -13,14 +13,14 @@ ENABLE_LINETRACE = "test" in sys.argv and platform.python_implementation() == "C
 try:
     from Cython.Build import cythonize
     from Cython.Distutils import build_ext
-    use_libarchive_from_program_files = os.environ.get("USE_LIBARCHIVE_FROM_PROGRAM_FILES") == "true"
+    _ci_windows_magic = os.environ.get("CI_AZURE_PIPELINE_BUILD_ON_WINDOWS") == "true"
     ext_modules = cythonize(
         Extension(
             "archi",
             ["archi.pyx"],
-            libraries=["archive"],
-            include_dirs=use_libarchive_from_program_files and [r'C:\Program Files (x86)\libarchive\include'] or None,
-            library_dirs=use_libarchive_from_program_files and [r'C:\Program Files (x86)\libarchive\lib'] or None,
+            libraries=[_ci_windows_magic and "archive_static" or "archive"],
+            include_dirs=_ci_windows_magic and [r'C:\Program Files (x86)\libarchive\include'] or None,
+            library_dirs=_ci_windows_magic and [r'C:\Program Files (x86)\libarchive\lib'] or None,
             define_macros=[("CYTHON_TRACE", ENABLE_LINETRACE and "1" or "0")],
         ),
         gdb_debug=True,

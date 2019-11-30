@@ -60,9 +60,10 @@ jobs:
       - task: PublishBuildArtifacts@1
         inputs: { pathtoPublish: "wheelhouse" }
   - job: windows_wheels
-    pool: { vmImage: "vs2017-win2016" }
+    pool: { vmImage: "windows-latest" }
     variables:
-      USE_LIBARCHIVE_FROM_PROGRAM_FILES: "true"
+      CI_AZURE_PIPELINE_BUILD_ON_WINDOWS: "true"
+      CIBW_TEST_COMMAND: ""
     steps:
       - bash: bash ci/download_libarchive.sh
         displayName: download libarchive
@@ -72,7 +73,7 @@ jobs:
       - script: |
           DIR "C:\Program Files (x86)\libarchive\lib"
           DIR "C:\Program Files (x86)\libarchive\include"
-          SET PATH="C:\Program Files (x86)\libarchive\lib";%PATH%
+          # SET PATH="C:\Program Files (x86)\libarchive\lib";%PATH%
           python -m pip install --upgrade pip
           pip install cibuildwheel==1.0.0
           cibuildwheel --output-dir wheelhouse .
