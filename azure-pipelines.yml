@@ -13,6 +13,8 @@ jobs:
     variables:
       LD_LIBRARY_PATH: /usr/local/lib
     steps:
+      - checkout: self
+        lfs: true
       - bash: bash ci/download_libarchive.sh
         displayName: download libarchive
       - bash: |
@@ -32,6 +34,8 @@ jobs:
   - job: linux_wheels
     pool: { vmImage: "Ubuntu-16.04" }
     steps:
+      - checkout: self
+        lfs: true
       - bash: bash ci/download_libarchive.sh
         displayName: download libarchive
       - task: UsePythonVersion@0
@@ -49,6 +53,8 @@ jobs:
       CPPFLAGS: "-I/usr/local/opt/libarchive/include"
       PKG_CONFIG_PATH: "/usr/local/opt/libarchive/lib/pkgconfig"
     steps:
+      - checkout: self
+        lfs: true
       - bash: brew install libarchive
         displayName: Install libarchive
       - task: UsePythonVersion@0
