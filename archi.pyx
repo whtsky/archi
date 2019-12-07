@@ -51,7 +51,6 @@ cdef extern from "archive_entry.h":
 cdef extern from "Python.h":
     object PyUnicode_EncodeFSDefault(object)
     object PyUnicode_DecodeFSDefaultAndSize(char *, Py_ssize_t)
-    object PyUnicode_FromString(char *str)
 
 cdef extern from "string.h":
     int strlen(char *)
@@ -64,7 +63,7 @@ class Error(Exception):
 
     def __init__(self, int errno, char *errstr):
         self.errno = errno
-        self.errstr = PyUnicode_FromString(errstr)
+        self.errstr = errstr
 
     def __str__(self):
         return "[%d] %s" % (self.errno, self.errstr)
@@ -167,9 +166,14 @@ cdef class Archive:
             return result
         return self._check(result)
 
+
     cdef int _check(Archive self, int result) except -1:
         if result == 0:
             return result
+        elif result == ARCHIVE_FAILED:
+            raise Error(
+                archive_errno(self._arch),
+                archive_error_string(self._arch))
         elif result == ARCHIVE_FATAL:
             self.close()
             raise Error(
@@ -185,7 +189,7 @@ cdef class Archive:
             warnings.warn(archive_error_string(self._arch))
             return 0
         else:
-            raise RuntimeError("Unknown return code")
+            raise RuntimeError("Unknown return code: %s" % result) 
         return 0
 
     def __iter__(self):
