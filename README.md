@@ -26,7 +26,7 @@ files[0].filename # Address boundary error !
 
 ## Changelog
 
-### vnext
+### v0.2.0
 
 - Add support for libarchive's `ARCHIVE_FAILED` error
 - use PyMem_Malloc & PyMem_Free instead of alloca

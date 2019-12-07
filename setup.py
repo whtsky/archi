@@ -48,7 +48,7 @@ class PyTest(TestCommand):
 
 setup(
     name="archi",
-    version="0.1.1",
+    version="0.2.0",
     description="Multi-format archive library based on libarchive",
     long_description=long_description,
     long_description_content_type="text/markdown",
