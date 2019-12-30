@@ -26,6 +26,10 @@ files[0].filename # Address boundary error !
 
 ## Changelog
 
+### v0.2.1
+
+- (wheels) Upgrade bundled libarchive to [v3.4.1](https://github.com/libarchive/libarchive/releases/tag/v3.4.1)
+
 ### v0.2.0
 
 - Add support for libarchive's `ARCHIVE_FAILED` error
