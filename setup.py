@@ -1,6 +1,6 @@
+from os import path
 import platform
 import sys
-from os import path
 
 from setuptools import setup
 from setuptools.command.test import test as TestCommand
@@ -48,7 +48,7 @@ class PyTest(TestCommand):
 
 setup(
     name="archi",
-    version="0.2.1",
+    version="0.2.2",
     description="Multi-format archive library based on libarchive",
     long_description=long_description,
     long_description_content_type="text/markdown",
