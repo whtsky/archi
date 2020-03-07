@@ -47,7 +47,7 @@ jobs:
       - task: PublishBuildArtifacts@1
         inputs: { pathtoPublish: "wheelhouse" }
   - job: macos_wheels
-    pool: { vmImage: "macOS-10.13" }
+    pool: { vmImage: "macOS-10.14" }
     variables:
       LDFLAGS: "-L/usr/local/opt/libarchive/lib"
       CPPFLAGS: "-I/usr/local/opt/libarchive/include"
