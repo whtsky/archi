@@ -26,6 +26,11 @@ files[0].filename # Address boundary error !
 
 ## Changelog
 
+### v0.2.2
+
+- (wheels) Upgrade bundled libarchive to [v3.4.2](https://github.com/libarchive/libarchive/releases/tag/v3.4.2)
+- (wheels) Build macOS wheels on macOS 10.14 (https://github.com/whtsky/archi/pull/6)
+
 ### v0.2.1
 
 - (wheels) Upgrade bundled libarchive to [v3.4.1](https://github.com/libarchive/libarchive/releases/tag/v3.4.1)
