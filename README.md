@@ -26,6 +26,10 @@ files[0].filename # Address boundary error !
 
 ## Changelog
 
+### v0.2.3
+
+- (wheels) Upgrade bundled libarchive to [v3.4.3](https://github.com/libarchive/libarchive/releases/tag/v3.4.3)
+
 ### v0.2.2
 
 - (wheels) Upgrade bundled libarchive to [v3.4.2](https://github.com/libarchive/libarchive/releases/tag/v3.4.2)
