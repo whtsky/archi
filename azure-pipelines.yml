@@ -32,7 +32,7 @@ jobs:
           bash <(curl -s https://codecov.io/bash)
         displayName: "Upload to codecov.io"
   - job: linux_wheels
-    pool: { vmImage: "Ubuntu-16.04" }
+    pool: { vmImage: "Ubuntu-18.04" }
     steps:
       - checkout: self
         lfs: true
@@ -47,7 +47,7 @@ jobs:
       - task: PublishBuildArtifacts@1
         inputs: { pathtoPublish: "wheelhouse" }
   - job: macos_wheels
-    pool: { vmImage: "macOS-10.14" }
+    pool: { vmImage: "macOS-1015" }
     variables:
       LDFLAGS: "-L/usr/local/opt/libarchive/lib"
       CPPFLAGS: "-I/usr/local/opt/libarchive/include"
