@@ -44,10 +44,10 @@ def test_read_size():
     assert data == expected_md5
 
 
-def test_handle_ARCHIVE_FAILED():
-    # https://github.com/libarchive/libarchive/issues/373
-    ar = archi.Archive(Path(__file__).parent / "fixtures" / "libarchive_issue_373.rar")
-    with pytest.raises(archi.Error) as e:
-        for ent in ar:
-            ent.read()
-    assert "Parsing filters is unsupported." in str(e)
+#def test_handle_ARCHIVE_FAILED():
+#    # https://github.com/libarchive/libarchive/issues/373
+#    ar = archi.Archive(Path(__file__).parent / "fixtures" / "libarchive_issue_373.rar")
+#    with pytest.raises(archi.Error) as e:
+#        for ent in ar:
+#            ent.read()
+#    assert "Parsing filters is unsupported." in str(e)
