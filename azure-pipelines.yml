@@ -26,13 +26,13 @@ jobs:
       - task: UsePythonVersion@0
       - bash: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install -r dev-requirements.txt
+          python -m pip install -r dev-requirements.txt
           python setup.py test
       - bash: |
           bash <(curl -s https://codecov.io/bash)
         displayName: "Upload to codecov.io"
   - job: linux_wheels
-    pool: { vmImage: "Ubuntu-18.04" }
+    pool: { vmImage: "Ubuntu-20.04" }
     steps:
       - checkout: self
         lfs: true
@@ -41,7 +41,7 @@ jobs:
       - task: UsePythonVersion@0
       - bash: |
           python -m pip install --upgrade pip setuptools wheel twine
-          pip install cibuildwheel==1.0.0
+          python -m pip install cibuildwheel==2.4.0
           cibuildwheel --output-dir wheelhouse .
           twine check wheelhouse/*.whl
       - task: PublishBuildArtifacts@1
@@ -60,7 +60,7 @@ jobs:
       - task: UsePythonVersion@0
       - bash: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install cibuildwheel==1.0.0
+          python -m pip install cibuildwheel==2.4.0
           cibuildwheel --output-dir wheelhouse .
       - task: PublishBuildArtifacts@1
         inputs: { pathtoPublish: "wheelhouse" }
