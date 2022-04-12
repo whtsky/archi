@@ -10,6 +10,8 @@ variables:
 
 jobs:
   - job: test
+    pool:
+      vmImage: "Ubuntu-20.04"
     variables:
       LD_LIBRARY_PATH: /usr/local/lib
     steps:
