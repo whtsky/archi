@@ -1,1 +1,2 @@
 Cython==0.29.21
+delocate==0.10.2
