@@ -41,3 +41,8 @@ def test_read_size():
             buf += chunk
         data[ent.filename] = md5(buf).hexdigest()
     assert data == expected_md5
+
+def test_raise_error():
+    with pytest.raises(archi.Error) as e:
+        archi.Archive("some_file_that_does_not_exist")
+    assert "Failed to open" in str(e)

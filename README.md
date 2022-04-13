@@ -26,6 +26,10 @@ files[0].filename # Address boundary error !
 
 ## Changelog
 
+### vnext
+- (wheels) Upgrade bundled libarchive to [v3.6.1](https://github.com/libarchive/libarchive/releases/tag/v3.6.1)
+- Fix SIGSEGV when received ARCHIVE_FATAL error
+
 ### v0.2.3
 
 - (wheels) Upgrade bundled libarchive to [v3.4.3](https://github.com/libarchive/libarchive/releases/tag/v3.4.3)
