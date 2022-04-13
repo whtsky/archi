@@ -57,7 +57,9 @@ jobs:
     steps:
       - checkout: self
         lfs: true
-      - bash: brew install libarchive
+      - bash: |
+          brew update
+          brew install libarchive
         displayName: Install libarchive
       - task: UsePythonVersion@0
       - bash: |
