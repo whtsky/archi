@@ -3,13 +3,15 @@ variables:
   CIBW_SKIP: cp27-*
   CIBW_BEFORE_BUILD: "pip install -r requirements.txt"
   # https://github.com/matthew-brett/delocate/pull/39
-  CIBW_BEFORE_BUILD_MACOS: "pip install -r requirements.txt && pip install git+https://github.com/matthew-brett/delocate.git@single-file-refactor"
+  #CIBW_BEFORE_BUILD_MACOS: "pip install -r requirements.txt && pip install git+https://github.com/matthew-brett/delocate.git@single-file-refactor"
   CIBW_BEFORE_BUILD_LINUX: "pip install -r requirements.txt && bash ci/centos_install_libarchive_builddep.sh && bash ci/build_libarchive.sh"
   CIBW_TEST_REQUIRES: pytest
   CIBW_TEST_COMMAND: "pytest {project}/tests"
 
 jobs:
   - job: test
+    pool:
+      vmImage: "Ubuntu-20.04"
     variables:
       LD_LIBRARY_PATH: /usr/local/lib
     steps:
@@ -26,13 +28,13 @@ jobs:
       - task: UsePythonVersion@0
       - bash: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install -r dev-requirements.txt
+          python -m pip install -r dev-requirements.txt
           python setup.py test
       - bash: |
           bash <(curl -s https://codecov.io/bash)
         displayName: "Upload to codecov.io"
   - job: linux_wheels
-    pool: { vmImage: "Ubuntu-16.04" }
+    pool: { vmImage: "Ubuntu-20.04" }
     steps:
       - checkout: self
         lfs: true
@@ -41,13 +43,13 @@ jobs:
       - task: UsePythonVersion@0
       - bash: |
           python -m pip install --upgrade pip setuptools wheel twine
-          pip install cibuildwheel==1.0.0
+          python -m pip install cibuildwheel==2.4.0
           cibuildwheel --output-dir wheelhouse .
           twine check wheelhouse/*.whl
       - task: PublishBuildArtifacts@1
         inputs: { pathtoPublish: "wheelhouse" }
   - job: macos_wheels
-    pool: { vmImage: "macOS-10.14" }
+    pool: { vmImage: "macOS-1015" }
     variables:
       LDFLAGS: "-L/usr/local/opt/libarchive/lib"
       CPPFLAGS: "-I/usr/local/opt/libarchive/include"
@@ -60,7 +62,7 @@ jobs:
       - task: UsePythonVersion@0
       - bash: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install cibuildwheel==1.0.0
+          python -m pip install cibuildwheel==2.4.0
           cibuildwheel --output-dir wheelhouse .
       - task: PublishBuildArtifacts@1
         inputs: { pathtoPublish: "wheelhouse" }
