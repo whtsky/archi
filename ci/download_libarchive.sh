@@ -4,6 +4,6 @@
 if [ ! -d libarchive ]; then
     git clone https://github.com/libarchive/libarchive.git
     pushd libarchive
-    git checkout v3.6.0
+    git checkout v3.6.1
     popd
 fi
