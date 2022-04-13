@@ -1,9 +1,8 @@
 from hashlib import md5
 from pathlib import Path
 
-import pytest
-
 import archi
+import pytest
 
 expected_md5 = {
     "archive/__init__.py": "29a6a1e050bd42fe24cd17b138d4b08d",
@@ -42,12 +41,3 @@ def test_read_size():
             buf += chunk
         data[ent.filename] = md5(buf).hexdigest()
     assert data == expected_md5
-
-
-#def test_handle_ARCHIVE_FAILED():
-#    # https://github.com/libarchive/libarchive/issues/373
-#    ar = archi.Archive(Path(__file__).parent / "fixtures" / "libarchive_issue_373.rar")
-#    with pytest.raises(archi.Error) as e:
-#        for ent in ar:
-#            ent.read()
-#    assert "Parsing filters is unsupported." in str(e)
