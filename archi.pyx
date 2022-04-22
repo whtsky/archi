@@ -149,12 +149,9 @@ cdef class Archive:
         else:
             self._check(archive_read_open_filename(self._arch, os.fsencode(file), bufsize))
 
-    cdef close(self):
+    def __del__(self):
         if self._arch:
             archive_read_free(self._arch)
-
-    def __del__(self):
-        self.close()
 
     cdef int _checkl(Archive self, int result) except -1:
         if result > 0:

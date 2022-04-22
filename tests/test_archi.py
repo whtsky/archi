@@ -40,6 +40,7 @@ def test_read_size():
                 break
             buf += chunk
         data[ent.filename] = md5(buf).hexdigest()
+    del ar
     assert data == expected_md5
 
 def test_raise_error():
