@@ -4,7 +4,7 @@ import warnings
 
 from cpython.bytes cimport *
 from cpython.unicode cimport *
-from pathlib import PurePath
+import os
 from libc.stdint cimport int64_t
 from cpython.mem cimport PyMem_Malloc, PyMem_Free
 
@@ -21,8 +21,7 @@ cdef extern from "archive.h":
     archive *archive_read_new()
     int archive_read_support_compression_all(archive *)
     int archive_read_support_format_all(archive *)
-    int archive_read_close(archive *)
-    int archive_read_finish(archive *)
+    int archive_read_free(archive *)
     int archive_errno(archive *)
     int archive_read_open_memory(archive *,char *, size_t)
     int archive_read_open_filename(archive *, char *, int)
@@ -148,18 +147,11 @@ cdef class Archive:
             buf = file.read()
             self._check(archive_read_open_memory(self._arch, buf, len(buf)))
         else:
-            if isinstance(file, PurePath):
-                file = str(file.resolve())
-            fn = PyUnicode_EncodeFSDefault(file)
-            self._check(archive_read_open_filename(self._arch, fn, bufsize))
-
-    cdef close(self):
-        if self._arch:
-            archive_read_close(self._arch)
-            archive_read_finish(self._arch)
+            self._check(archive_read_open_filename(self._arch, os.fsencode(file), bufsize))
 
     def __del__(self):
-        self.close()
+        if self._arch:
+            archive_read_free(self._arch)
 
     cdef int _checkl(Archive self, int result) except -1:
         if result > 0:
@@ -175,7 +167,6 @@ cdef class Archive:
                 archive_errno(self._arch),
                 archive_error_string(self._arch))
         elif result == ARCHIVE_FATAL:
-            self.close()
             raise Error(
                 archive_errno(self._arch),
                 archive_error_string(self._arch))
