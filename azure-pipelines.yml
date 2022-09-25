@@ -25,7 +25,7 @@ jobs:
         displayName: install build dependencies for libarchive
       - bash: sudo bash ci/build_libarchive.sh
         displayName: build libarchive
-      - task: UsePythonVersion@0
+      - task: UsePythonVersion@0.206.0
       - bash: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install -r dev-requirements.txt
@@ -40,7 +40,7 @@ jobs:
         lfs: true
       - bash: bash ci/download_libarchive.sh
         displayName: download libarchive
-      - task: UsePythonVersion@0
+      - task: UsePythonVersion@0.206.0
       - bash: |
           python -m pip install --upgrade pip setuptools wheel twine
           python -m pip install cibuildwheel==2.4.0
@@ -61,7 +61,7 @@ jobs:
           brew update
           brew install libarchive
         displayName: Install libarchive
-      - task: UsePythonVersion@0
+      - task: UsePythonVersion@0.206.0
       - bash: |
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install cibuildwheel==2.4.0
