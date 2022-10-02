@@ -46,7 +46,7 @@ jobs:
           python -m pip install cibuildwheel==2.4.0
           cibuildwheel --output-dir wheelhouse .
           twine check wheelhouse/*.whl
-      - task: PublishBuildArtifacts@1
+      - task: PublishBuildArtifacts@1.211.0
         inputs: { pathtoPublish: "wheelhouse" }
   - job: macos_wheels
     pool: { vmImage: "macOS-1015" }
@@ -66,7 +66,7 @@ jobs:
           python -m pip install --upgrade pip setuptools wheel
           python -m pip install cibuildwheel==2.4.0
           cibuildwheel --output-dir wheelhouse .
-      - task: PublishBuildArtifacts@1
+      - task: PublishBuildArtifacts@1.211.0
         inputs: { pathtoPublish: "wheelhouse" }
   # - job: windows_wheels
   #   pool: { vmImage: "vs2017-win2016" }
