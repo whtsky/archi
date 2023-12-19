@@ -1,2 +1,2 @@
-Cython==0.29.32
+Cython==0.29.37
 delocate==0.10.2
