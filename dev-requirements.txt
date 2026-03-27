@@ -1,4 +1,4 @@
 -r requirements.txt
-black==23.1.0
+black==23.12.1
 pytest
 pytest-cov
