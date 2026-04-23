@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel", "Cython>=3.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
-skip = "cp38-* pp* *-musllinux_*"
+skip = "cp38-* *-musllinux_*"
 test-requires = "pytest"
 test-command = "pytest {project}/tests"
 
