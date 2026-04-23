@@ -1,8 +1,11 @@
+[build-system]
+requires = ["setuptools", "wheel", "Cython"]
+build-backend = "setuptools.build_meta"
+
 [tool.cibuildwheel]
-skip = "pp* cp36-* cp37-* cp38-*"
+skip = "cp38-*"
 test-requires = "pytest"
 test-command = "pytest {project}/tests"
-before-build = "pip install Cython"
 
 [tool.cibuildwheel.linux]
 archs = "x86_64 aarch64"
@@ -16,4 +19,4 @@ before-all = [
 before-all = "brew install libarchive"
 
 [tool.cibuildwheel.windows]
-before-build = "pip install Cython delvewheel"
+before-build = "pip install delvewheel"
