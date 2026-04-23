@@ -21,7 +21,7 @@ before-all = [
     "bash {project}/ci/download_libarchive.sh",
     "sudo bash {project}/ci/build_libarchive.sh",
 ]
-environment = { LDFLAGS = "-L/usr/local/lib", CPPFLAGS = "-I/usr/local/include" }
+environment = { LDFLAGS = "-L/usr/local/lib", CPPFLAGS = "-I/usr/local/include", MACOSX_DEPLOYMENT_TARGET = "14.0" }
 
 [tool.cibuildwheel.windows]
 archs = "AMD64"
