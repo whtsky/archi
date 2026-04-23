@@ -95,9 +95,6 @@ cdef class Entry:
         def __get__(self):
             return archive_entry_size(self._entry)
 
-    def __del__(self):
-        archive_entry_free(self._entry)
-
     def skip(self):
         if self.archive._cur is self:
             self.archive._cur = None

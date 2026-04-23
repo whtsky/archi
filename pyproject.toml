@@ -19,11 +19,12 @@ before-all = [
 before-all = [
     "brew install cmake zstd lz4 xz libb2",
     "bash {project}/ci/download_libarchive.sh",
-    "LIBARCHIVE_PREFIX={project}/libarchive_install bash {project}/ci/build_libarchive.sh",
+    "sudo bash {project}/ci/build_libarchive.sh",
 ]
-environment = { LDFLAGS = "-L{project}/libarchive_install/lib", CPPFLAGS = "-I{project}/libarchive_install/include" }
+environment = { LDFLAGS = "-L/usr/local/lib", CPPFLAGS = "-I/usr/local/include" }
 
 [tool.cibuildwheel.windows]
+archs = "AMD64"
 before-all = "ci\\build_libarchive.cmd"
 before-build = "pip install delvewheel"
 environment = { INCLUDE = "build_ci/install/include", LIB = "build_ci/install/lib" }
