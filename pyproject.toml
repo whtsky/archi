@@ -16,7 +16,14 @@ before-all = [
 ]
 
 [tool.cibuildwheel.macos]
-before-all = "brew install libarchive"
+before-all = [
+    "brew install cmake zstd lz4 xz libb2",
+    "bash {project}/ci/download_libarchive.sh",
+    "bash {project}/ci/build_libarchive.sh",
+]
 
 [tool.cibuildwheel.windows]
+before-all = "ci\\build_libarchive.cmd"
 before-build = "pip install delvewheel"
+environment = { INCLUDE = "build_ci\\install\\include", LIB = "build_ci\\install\\lib" }
+repair-wheel-command = "delvewheel repair -w {dest_dir} --add-path build_ci\\install\\bin {wheel}"

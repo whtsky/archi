@@ -13,7 +13,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Check for new libarchive release
         env:
@@ -34,7 +34,6 @@ jobs:
           echo "$LATEST" > LIBARCHIVE_VERSION
           sed -i "s/version=\".*\"/version=\"$VERSION\"/" setup.py
 
-          # Prepend new entry to CHANGELOG.md after the header
           sed -i "/^# Changelog/a\\\\n## v${VERSION}\n\n- (wheels) Upgrade bundled libarchive to [${LATEST}](https://github.com/libarchive/libarchive/releases/tag/${LATEST})" CHANGELOG.md
 
           BRANCH="bump-libarchive-${LATEST}"
