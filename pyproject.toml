@@ -21,9 +21,10 @@ before-all = [
     "bash {project}/ci/download_libarchive.sh",
     "bash {project}/ci/build_libarchive.sh",
 ]
+environment = { LDFLAGS = "-L/usr/local/lib", CPPFLAGS = "-I/usr/local/include" }
 
 [tool.cibuildwheel.windows]
 before-all = "ci\\build_libarchive.cmd"
 before-build = "pip install delvewheel"
-environment = { INCLUDE = "build_ci\\install\\include", LIB = "build_ci\\install\\lib" }
-repair-wheel-command = "delvewheel repair -w {dest_dir} --add-path build_ci\\install\\bin {wheel}"
+environment = { INCLUDE = "build_ci/install/include", LIB = "build_ci/install/lib" }
+repair-wheel-command = "delvewheel repair -w {dest_dir} --add-path build_ci/install/bin {wheel}"

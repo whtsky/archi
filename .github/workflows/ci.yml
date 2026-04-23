@@ -16,13 +16,13 @@ jobs:
     env:
       LD_LIBRARY_PATH: /usr/local/lib
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           lfs: true
 
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.x"
 
       - name: Install libarchive build dependencies
         run: |
@@ -49,7 +49,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-13, macos-14, windows-latest]
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           lfs: true
 
@@ -69,13 +69,13 @@ jobs:
   build_sdist:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           lfs: true
 
       - uses: actions/setup-python@v6
         with:
-          python-version: "3.12"
+          python-version: "3.x"
 
       - run: |
           pip install build Cython
@@ -104,7 +104,7 @@ jobs:
     needs: [test, build_wheels, build_sdist]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - uses: actions/download-artifact@v8
         with:
