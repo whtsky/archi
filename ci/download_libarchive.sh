@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
+set -e
 
-# todo: git submodule does not support tags
+VERSION=$(cat "$(dirname "$0")/../LIBARCHIVE_VERSION" | tr -d '[:space:]')
+
 if [ ! -d libarchive ]; then
     git clone https://github.com/libarchive/libarchive.git
-    pushd libarchive
-    git checkout v3.6.1
-    popd
 fi
+
+cd libarchive
+git fetch --tags
+git checkout "$VERSION"

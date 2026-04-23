@@ -14,3 +14,6 @@ before-all = [
 
 [tool.cibuildwheel.macos]
 before-all = "brew install libarchive"
+
+[tool.cibuildwheel.windows]
+before-build = "pip install Cython delvewheel"
