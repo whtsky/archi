@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools", "wheel", "Cython"]
+requires = ["setuptools", "wheel", "Cython>=3.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
@@ -19,9 +19,9 @@ before-all = [
 before-all = [
     "brew install cmake zstd lz4 xz libb2",
     "bash {project}/ci/download_libarchive.sh",
-    "bash {project}/ci/build_libarchive.sh",
+    "LIBARCHIVE_PREFIX={project}/libarchive_install bash {project}/ci/build_libarchive.sh",
 ]
-environment = { LDFLAGS = "-L/usr/local/lib", CPPFLAGS = "-I/usr/local/include" }
+environment = { LDFLAGS = "-L{project}/libarchive_install/lib", CPPFLAGS = "-I{project}/libarchive_install/include" }
 
 [tool.cibuildwheel.windows]
 before-all = "ci\\build_libarchive.cmd"
