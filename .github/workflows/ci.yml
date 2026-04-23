@@ -65,7 +65,7 @@ jobs:
           echo "LIB=$VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib;$env:LIB" >> $env:GITHUB_ENV
           echo "$VCPKG_INSTALLATION_ROOT\installed\x64-windows\bin" >> $env:GITHUB_PATH
 
-      - uses: pypa/cibuildwheel@v3
+      - uses: pypa/cibuildwheel@v3.4
         env:
           CIBW_ENVIRONMENT_MACOS: >-
             LDFLAGS="-L$(brew --prefix libarchive)/lib"
