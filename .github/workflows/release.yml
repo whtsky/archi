@@ -1,0 +1,92 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  build_wheels:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-13, macos-14]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Download libarchive source
+        run: bash ci/download_libarchive.sh
+
+      - name: Set up QEMU
+        if: runner.os == 'Linux'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+
+      - uses: pypa/cibuildwheel@v2
+        env:
+          CIBW_ENVIRONMENT_MACOS: >-
+            LDFLAGS="-L$(brew --prefix libarchive)/lib"
+            CPPFLAGS="-I$(brew --prefix libarchive)/include"
+            PKG_CONFIG_PATH="$(brew --prefix libarchive)/lib/pkgconfig"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheels-${{ matrix.os }}
+          path: wheelhouse/*.whl
+
+  build_sdist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - run: |
+          pip install build Cython
+          python -m build --sdist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+
+  publish:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    environment: pypi
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  github_release:
+    needs: [build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" dist/* \
+            --title "${{ github.ref_name }}" \
+            --generate-notes

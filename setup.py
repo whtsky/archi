@@ -59,6 +59,7 @@ setup(
     author="Wu Haotian",
     author_email="whtsky@gmail.com",
     url="https://github.com/whtsky/archi",
+    python_requires=">=3.9",
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Intended Audience :: Developers",
