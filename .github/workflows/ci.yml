@@ -2,9 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [master, bump-libarchive-*]
+    branches: [master]
     tags: ["v*"]
   pull_request:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref to checkout"
+        required: false
 
 permissions:
   contents: write

@@ -8,6 +8,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: write
 
 jobs:
   check:
@@ -50,3 +51,5 @@ jobs:
 
           Release notes: https://github.com/libarchive/libarchive/releases/tag/${LATEST}" \
             --base master
+
+          gh workflow run ci.yml --ref "$BRANCH"
