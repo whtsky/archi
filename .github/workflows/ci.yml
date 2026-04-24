@@ -6,10 +6,6 @@ on:
     tags: ["v*"]
   pull_request:
   workflow_dispatch:
-    inputs:
-      ref:
-        description: "Git ref to checkout"
-        required: false
 
 permissions:
   contents: write
