@@ -8,15 +8,5 @@
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "libarchive/libarchive"
     }
-  ],
-  "packageRules": [
-    {
-      "matchDepNames": ["libarchive/libarchive"],
-      "postUpgradeTasks": {
-        "commands": ["echo 0 > VERSION"],
-        "fileFilters": ["VERSION"],
-        "executionMode": "update"
-      }
-    }
   ]
 }
