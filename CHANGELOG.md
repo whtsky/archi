@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.8.7
+
+- (wheels) Upgrade bundled libarchive to [v3.8.7](https://github.com/libarchive/libarchive/releases/tag/v3.8.7)
+
 ## v3.6.1
 - Version now mirrors bundled libarchive version
 - (wheels) Bundled libarchive [v3.6.1](https://github.com/libarchive/libarchive/releases/tag/v3.6.1)
