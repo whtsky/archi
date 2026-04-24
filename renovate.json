@@ -1,3 +1,12 @@
 {
-  "extends": ["@whtsky"]
+  "extends": ["@whtsky"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["^LIBARCHIVE_VERSION$"],
+      "matchStrings": ["(?<currentValue>v[\\d\\.]+)"],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "libarchive/libarchive"
+    }
+  ]
 }

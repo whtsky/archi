@@ -33,6 +33,8 @@ except ImportError:
 this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
+with open(path.join(this_directory, "LIBARCHIVE_VERSION"), encoding="utf-8") as f:
+    version = f.read().strip().lstrip("v")
 
 
 class PyTest(TestCommand):
@@ -48,7 +50,7 @@ class PyTest(TestCommand):
 
 setup(
     name="archi",
-    version="3.6.1",
+    version=version,
     description="Multi-format archive library based on libarchive",
     long_description=long_description,
     long_description_content_type="text/markdown",
