@@ -1,8 +1,12 @@
 # Changelog
 
-## vnext
-- (wheels) Upgrade bundled libarchive to [v3.6.1](https://github.com/libarchive/libarchive/releases/tag/v3.6.1)
+## v3.6.1
+- Version now mirrors bundled libarchive version
+- (wheels) Bundled libarchive [v3.6.1](https://github.com/libarchive/libarchive/releases/tag/v3.6.1)
+- (wheels) Add Windows wheel builds
+- (wheels) Add Linux aarch64 wheel builds
 - Fix SIGSEGV when received ARCHIVE_FATAL error
+- Migrate CI from Azure Pipelines to GitHub Actions
 
 ## v0.2.3
 

@@ -1,6 +1,6 @@
 # Archi
 
-[![Build Status](https://whtsky.visualstudio.com/archi/_apis/build/status/whtsky.archi?branchName=master)](https://whtsky.visualstudio.com/archi/_build/latest?definitionId=2&branchName=master)
+[![CI](https://github.com/whtsky/archi/actions/workflows/ci.yml/badge.svg)](https://github.com/whtsky/archi/actions/workflows/ci.yml)
 
 Multi-format archive library based on [libarchive](https://github.com/libarchive/libarchive) . Forked from [pyarchive](https://github.com/tailhook/pyarchive)
 
@@ -29,4 +29,3 @@ files[0].filename # Address boundary error !
 ## TODO
 
 - [ ] compression
-- [ ] build wheels for Windows: https://discuss.python.org/t/need-auditwheel-like-utility-for-other-platforms/2028 , https://discuss.python.org/t/packaging-dlls-on-windows/1401

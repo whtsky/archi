@@ -3,7 +3,12 @@ name: CI
 on:
   push:
     branches: [master]
+    tags: ["v*"]
   pull_request:
+
+permissions:
+  contents: write
+  id-token: write
 
 jobs:
   test:
@@ -11,11 +16,11 @@ jobs:
     env:
       LD_LIBRARY_PATH: /usr/local/lib
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           lfs: true
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
@@ -33,50 +38,30 @@ jobs:
       - name: Install and test
         run: |
           pip install --upgrade pip setuptools wheel
-          pip install -r requirements.txt -r dev-requirements.txt
-          pip install -e . --no-build-isolation
+          pip install -r dev-requirements.txt
+          pip install .
           pytest --cov --cov-report=xml --cov-report=term-missing
 
   build_wheels:
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-13, macos-14, windows-latest]
+        os: [ubuntu-latest, macos-14, windows-latest]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           lfs: true
 
-      - name: Download libarchive source (non-Windows)
-        if: runner.os != 'Windows'
-        run: bash ci/download_libarchive.sh
-
       - name: Set up QEMU
         if: runner.os == 'Linux'
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
         with:
           platforms: arm64
 
-      - name: Install libarchive via vcpkg (Windows)
-        if: runner.os == 'Windows'
-        run: |
-          vcpkg install libarchive:x64-windows
-          echo "INCLUDE=$VCPKG_INSTALLATION_ROOT\installed\x64-windows\include;$env:INCLUDE" >> $env:GITHUB_ENV
-          echo "LIB=$VCPKG_INSTALLATION_ROOT\installed\x64-windows\lib;$env:LIB" >> $env:GITHUB_ENV
-          echo "$VCPKG_INSTALLATION_ROOT\installed\x64-windows\bin" >> $env:GITHUB_PATH
-
       - uses: pypa/cibuildwheel@v3.4
-        env:
-          CIBW_ENVIRONMENT_MACOS: >-
-            LDFLAGS="-L$(brew --prefix libarchive)/lib"
-            CPPFLAGS="-I$(brew --prefix libarchive)/include"
-            PKG_CONFIG_PATH="$(brew --prefix libarchive)/lib/pkgconfig"
-          CIBW_ENVIRONMENT_WINDOWS: >-
-            INCLUDE="C:\\vcpkg\\installed\\x64-windows\\include"
-            LIB="C:\\vcpkg\\installed\\x64-windows\\lib"
-          CIBW_REPAIR_WHEEL_COMMAND_WINDOWS: "delvewheel repair -w {dest_dir} --add-path C:\\vcpkg\\installed\\x64-windows\\bin {wheel}"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: wheels-${{ matrix.os }}
           path: wheelhouse/*.whl
@@ -84,11 +69,11 @@ jobs:
   build_sdist:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           lfs: true
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
@@ -96,7 +81,40 @@ jobs:
           pip install build Cython
           python -m build --sdist
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: sdist
           path: dist/*.tar.gz
+
+  publish:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: [test, build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    environment: pypi
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+
+      - uses: pypa/gh-action-pypi-publish@release/v1
+
+  github_release:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')
+    needs: [test, build_wheels, build_sdist]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ github.ref_name }}" dist/* \
+            --title "${{ github.ref_name }}" \
+            --generate-notes

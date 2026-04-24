@@ -1,24 +1,24 @@
 @ECHO OFF
-SET ZLIB_VERSION=1.2.11
-IF NOT EXIST build_ci\libs (
-    MKDIR build_ci\libs
-)
-CD build_ci\libs
-IF NOT EXIST zlib-%ZLIB_VERSION%.tar.gz (
-curl -o zlib-%ZLIB_VERSION%.tar.gz https://www.zlib.net/zlib-%ZLIB_VERSION%.tar.gz
-)
-IF NOT EXIST zlib-%ZLIB_VERSION% (
-tar -x -z -f zlib-%ZLIB_VERSION%.tar.gz
-)
-CD zlib-%ZLIB_VERSION%
-cmake -G "Visual Studio 15 2017" . || EXIT /b 1
-cmake --build . --target ALL_BUILD --config Release || EXIT /b 1
-cmake --build . --target RUN_TESTS --config Release || EXIT /b 1
-cmake --build . --target INSTALL --config Release || EXIT /b 1
-CD ..\..\..
+SETLOCAL EnableDelayedExpansion
 
+REM Read version from LIBARCHIVE_VERSION
+SET /p LIBARCHIVE_VERSION=<"%~dp0..\LIBARCHIVE_VERSION"
+SET LIBARCHIVE_VERSION=%LIBARCHIVE_VERSION: =%
 
-MKDIR build_ci\cmake
-CD build_ci\cmake
-cmake -G "Visual Studio 15 2017" -D CMAKE_BUILD_TYPE="Release" ..\..\libarchive || EXIT /b 1
-cmake --build . --target ALL_BUILD --config Release
+REM Strip leading 'v' for directory name
+SET VERSION_NUM=%LIBARCHIVE_VERSION:v=%
+
+IF NOT EXIST libarchive (
+    echo Downloading libarchive %LIBARCHIVE_VERSION%...
+    curl -sL "https://github.com/libarchive/libarchive/archive/refs/tags/%LIBARCHIVE_VERSION%.tar.gz" -o libarchive.tar.gz || EXIT /b 1
+    tar xzf libarchive.tar.gz || EXIT /b 1
+    ren "libarchive-%VERSION_NUM%" libarchive || EXIT /b 1
+    del libarchive.tar.gz
+)
+
+MKDIR build_ci 2>NUL
+CD build_ci
+cmake -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DENABLE_TEST=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..\libarchive || EXIT /b 1
+cmake --build . --config Release || EXIT /b 1
+cmake --install . --prefix install || EXIT /b 1
+CD ..
