@@ -3,14 +3,14 @@ requires = ["setuptools", "wheel", "Cython>=3.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
-skip = "cp38-* *-musllinux_*"
+skip = "cp38-*"
 test-requires = "pytest"
 test-command = "pytest {project}/tests"
 
 [tool.cibuildwheel.linux]
 archs = "x86_64 aarch64"
 before-all = [
-    "dnf install -y cmake lzop libzip-devel libzstd-devel libacl-devel xz-devel lz4-devel zlib-devel",
+    "bash {project}/ci/install_deps.sh",
     "bash {project}/ci/download_libarchive.sh",
     "bash {project}/ci/build_libarchive.sh",
 ]
