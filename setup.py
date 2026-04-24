@@ -34,7 +34,10 @@ this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 with open(path.join(this_directory, "LIBARCHIVE_VERSION"), encoding="utf-8") as f:
-    version = f.read().strip().lstrip("v")
+    libarchive_version = f.read().strip().lstrip("v")
+with open(path.join(this_directory, "VERSION"), encoding="utf-8") as f:
+    archi_patch = f.read().strip()
+version = f"{libarchive_version}.{archi_patch}"
 
 
 class PyTest(TestCommand):
