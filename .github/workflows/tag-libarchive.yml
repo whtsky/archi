@@ -1,0 +1,93 @@
+name: Tag libarchive upgrade
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+    branches: [master]
+
+concurrency:
+  group: libarchive-release
+  cancel-in-progress: false
+
+# RELEASE_TOKEN performs the tag push. The normal GITHUB_TOKEN only needs read access.
+permissions:
+  contents: read
+
+jobs:
+  tag:
+    environment:
+      name: release
+
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'master'
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN }}
+
+      - name: Compute release tag
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          sha="${{ github.event.workflow_run.head_sha }}"
+          changed="$(git diff-tree --no-commit-id --name-only -r -m "$sha")"
+
+          if ! grep -Fxq 'LIBARCHIVE_VERSION' <<<"$changed"; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          tag="$(python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          libarchive = Path("LIBARCHIVE_VERSION").read_text().strip()
+          patch = Path("VERSION").read_text().strip()
+
+          if not re.fullmatch(r"v\d+(?:\.\d+)+", libarchive):
+              raise SystemExit(f"invalid LIBARCHIVE_VERSION: {libarchive!r}")
+          if not re.fullmatch(r"\d+", patch):
+              raise SystemExit(f"invalid VERSION: {patch!r}")
+
+          print(f"{libarchive}.{patch}")
+          PY
+          )"
+
+          echo 'changed=true' >> "$GITHUB_OUTPUT"
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "Will create $tag for $sha"
+
+      - name: Create and push tag
+        if: steps.version.outputs.changed == 'true'
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --tags origin
+
+          if git show-ref --verify --quiet "refs/tags/$TAG"; then
+            existing="$(git rev-parse "$TAG^{commit}")"
+            if [[ "$existing" != "$SHA" ]]; then
+              echo "::error::tag $TAG already points to $existing, expected $SHA"
+              exit 1
+            fi
+            echo "$TAG already points to $SHA; nothing to do"
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git tag --annotate "$TAG" "$SHA" --message "Release $TAG"
+          git push origin "refs/tags/$TAG"
