@@ -16,9 +16,24 @@ IF NOT EXIST libarchive (
     del libarchive.tar.gz
 )
 
+REM cibuildwheel sets CIBW_ARCHS for each wheel job. Fall back to the
+REM Visual Studio target architecture when running the script directly.
+SET TARGET_ARCH=%CIBW_ARCHS%
+IF NOT DEFINED TARGET_ARCH SET TARGET_ARCH=%VSCMD_ARG_TGT_ARCH%
+IF NOT DEFINED TARGET_ARCH SET TARGET_ARCH=AMD64
+
+SET CMAKE_ARCH=
+IF /I "%TARGET_ARCH%"=="AMD64" SET CMAKE_ARCH=x64
+IF /I "%TARGET_ARCH%"=="x64" SET CMAKE_ARCH=x64
+IF /I "%TARGET_ARCH%"=="ARM64" SET CMAKE_ARCH=ARM64
+IF NOT DEFINED CMAKE_ARCH (
+    echo Unsupported Windows target architecture: %TARGET_ARCH%
+    EXIT /b 1
+)
+
 MKDIR build_ci 2>NUL
 CD build_ci
-cmake -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=Release -DENABLE_TEST=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..\libarchive || EXIT /b 1
+cmake -G "Visual Studio 17 2022" -A %CMAKE_ARCH% -DCMAKE_BUILD_TYPE=Release -DENABLE_TEST=OFF -DCMAKE_POLICY_VERSION_MINIMUM=3.5 ..\libarchive || EXIT /b 1
 cmake --build . --config Release || EXIT /b 1
 cmake --install . --prefix install || EXIT /b 1
 CD ..

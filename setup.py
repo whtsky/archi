@@ -18,7 +18,11 @@ try:
             "archi",
             ["archi.pyx"],
             libraries=["archive"],
-            define_macros=[("CYTHON_TRACE", ENABLE_LINETRACE and "1" or "0")],
+            define_macros=[
+                ("Py_LIMITED_API", "0x03090000"),
+                ("CYTHON_TRACE", ENABLE_LINETRACE and "1" or "0"),
+            ],
+            py_limited_api=True,
         ),
         gdb_debug=True,
         compiler_directives={
@@ -27,7 +31,15 @@ try:
         },
     )
 except ImportError:
-    ext_modules = [Extension("archi", ["archi.c"], libraries=["archive"],)]
+    ext_modules = [
+        Extension(
+            "archi",
+            ["archi.c"],
+            libraries=["archive"],
+            define_macros=[("Py_LIMITED_API", "0x03090000")],
+            py_limited_api=True,
+        )
+    ]
 
 
 this_directory = path.abspath(path.dirname(__file__))
@@ -74,4 +86,5 @@ setup(
     ],
     cmdclass={"test": PyTest},
     ext_modules=ext_modules,
+    options={"bdist_wheel": {"py_limited_api": "cp39"}},
 )

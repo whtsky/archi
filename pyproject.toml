@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel", "Cython>=3.3.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.cibuildwheel]
-skip = "cp38-*"
+build = "cp39-*"
 test-requires = "pytest"
 test-command = "pytest {project}/tests"
 
@@ -24,7 +24,7 @@ before-all = [
 environment = { LDFLAGS = "-L/usr/local/lib", CPPFLAGS = "-I/usr/local/include", MACOSX_DEPLOYMENT_TARGET = "14.0" }
 
 [tool.cibuildwheel.windows]
-archs = "AMD64"
+archs = "AMD64 ARM64"
 before-all = "ci\\build_libarchive.cmd"
 before-build = "pip install delvewheel"
 environment = { INCLUDE = "build_ci/install/include", LIB = "build_ci/install/lib" }
