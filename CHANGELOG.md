@@ -1,5 +1,10 @@
 # Changelog
 
+## v3.8.9.1
+- (wheels) Build CPython 3.9 `abi3` wheels compatible with later CPython minor versions instead of rebuilding for each version
+- (wheels/CI) Build Linux aarch64 wheels on a native runner without QEMU
+- (wheels/CI) Add Windows ARM64 wheel coverage
+
 ## v3.6.1
 - Version now mirrors bundled libarchive version
 - (wheels) Bundled libarchive [v3.6.1](https://github.com/libarchive/libarchive/releases/tag/v3.6.1)
