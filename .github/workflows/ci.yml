@@ -73,7 +73,7 @@ jobs:
         with:
           lfs: true
 
-      - uses: pypa/cibuildwheel@v4.2
+      - uses: pypa/cibuildwheel@v4.3
         env:
           CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_TEST_SKIP: ${{ matrix.test-skip }}
