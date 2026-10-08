@@ -1,5 +1,5 @@
 {
-  "extends": ["@whtsky"],
+  "extends": ["github>whtsky/renovate-config"],
   "customManagers": [
     {
       "customType": "regex",
@@ -7,6 +7,17 @@
       "matchStrings": ["(?<currentValue>v[\\d\\.]+)"],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "libarchive/libarchive"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["pip_requirements"],
+      "matchFileNames": ["dev-requirements.txt"],
+      "matchPackageNames": ["black"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
     }
   ]
 }
