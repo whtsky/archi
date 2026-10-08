@@ -3,7 +3,9 @@
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["^LIBARCHIVE_VERSION$"],
+      "managerFilePatterns": [
+        "/^LIBARCHIVE_VERSION$/"
+      ],
       "matchStrings": ["(?<currentValue>v[\\d\\.]+)"],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "libarchive/libarchive"
