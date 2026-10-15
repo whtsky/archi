@@ -2,5 +2,6 @@ include LICENSE
 include archi.pyx
 include archi.c
 include README.md
+include release_version.py
 include VERSION
 include LIBARCHIVE_VERSION
