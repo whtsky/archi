@@ -6,6 +6,9 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 from setuptools.extension import Extension
 
+sys.path.insert(0, path.abspath(path.dirname(__file__)))
+from release_version import resolve_release_version
+
 ENABLE_LINETRACE = "test" in sys.argv and platform.python_implementation() == "CPython"
 
 
@@ -46,10 +49,10 @@ this_directory = path.abspath(path.dirname(__file__))
 with open(path.join(this_directory, "README.md"), encoding="utf-8") as f:
     long_description = f.read()
 with open(path.join(this_directory, "LIBARCHIVE_VERSION"), encoding="utf-8") as f:
-    libarchive_version = f.read().strip().lstrip("v")
+    libarchive_version = f.read().strip()
 with open(path.join(this_directory, "VERSION"), encoding="utf-8") as f:
-    archi_patch = f.read().strip()
-version = f"{libarchive_version}.{archi_patch}"
+    recorded_version = f.read().strip()
+version = resolve_release_version(libarchive_version, recorded_version)
 
 
 class PyTest(TestCommand):

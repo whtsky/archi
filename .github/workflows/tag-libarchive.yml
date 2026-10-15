@@ -49,17 +49,13 @@ jobs:
 
           tag="$(python3 - <<'PY'
           from pathlib import Path
-          import re
+
+          from release_version import resolve_release_version
 
           libarchive = Path("LIBARCHIVE_VERSION").read_text().strip()
-          patch = Path("VERSION").read_text().strip()
+          recorded = Path("VERSION").read_text().strip()
 
-          if not re.fullmatch(r"v\d+(?:\.\d+)+", libarchive):
-              raise SystemExit(f"invalid LIBARCHIVE_VERSION: {libarchive!r}")
-          if not re.fullmatch(r"\d+", patch):
-              raise SystemExit(f"invalid VERSION: {patch!r}")
-
-          print(f"{libarchive}.{patch}")
+          print(f"v{resolve_release_version(libarchive, recorded)}")
           PY
           )"
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## Unreleased
+- Reset the Archi patch component to zero when the bundled libarchive version changes
+
 ## v3.8.9.1
 - (wheels) Build CPython 3.9 `abi3` wheels compatible with later CPython minor versions instead of rebuilding for each version
 - (wheels/CI) Build Linux aarch64 wheels on a native runner without QEMU
