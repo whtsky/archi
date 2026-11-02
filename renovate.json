@@ -1,4 +1,5 @@
 {
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": ["github>whtsky/renovate-config"],
   "customManagers": [
     {
@@ -9,6 +10,15 @@
       "matchStrings": ["(?<currentValue>v[\\d\\.]+)"],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "libarchive/libarchive"
+    }
+  ],
+  "packageRules": [
+    {
+      "matchPackageNames": ["libarchive/libarchive"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true,
+      "automergeType": "pr",
+      "platformAutomerge": true
     }
   ]
 }

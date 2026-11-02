@@ -16,7 +16,10 @@ def test_checked_in_release_version_is_preserved():
     libarchive_version = (ROOT / "LIBARCHIVE_VERSION").read_text().strip()
     recorded_version = (ROOT / "VERSION").read_text().strip()
 
-    assert resolve_release_version(libarchive_version, recorded_version) == "3.8.10.1"
+    upstream = libarchive_version.removeprefix("v")
+    recorded_upstream, _, _ = recorded_version.rpartition(".")
+    expected = recorded_version if recorded_upstream == upstream else f"{upstream}.0"
+    assert resolve_release_version(libarchive_version, recorded_version) == expected
 
 
 @pytest.mark.parametrize("recorded_version", ["3.8.10.1", "3.8.10.2"])
